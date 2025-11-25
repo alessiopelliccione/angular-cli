@@ -95,6 +95,11 @@ export async function createAngularSsrExternalMiddleware(
     res: ServerResponse,
     next: Connect.NextFunction,
   ) {
+    // Skip Vite's internal requests to allow them to be processed by Vite's own middlewares
+    if (req.url?.startsWith('/@') || req.url?.includes('/__vite')) {
+      return next();
+    }
+
     (async () => {
       const { reqHandler, AngularAppEngine } = (await server.ssrLoadModule('./server.mjs')) as {
         reqHandler?: unknown;
